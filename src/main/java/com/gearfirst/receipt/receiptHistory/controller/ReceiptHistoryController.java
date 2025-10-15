@@ -3,6 +3,8 @@ package com.gearfirst.receipt.receiptHistory.controller;
 import com.gearfirst.receipt.common.response.ApiResponse;
 import com.gearfirst.receipt.common.response.SuccessStatus;
 import com.gearfirst.receipt.receiptHistory.dto.ReceiptHistoryResponse;
+import com.gearfirst.receipt.receiptHistory.dto.RepairDetailRequest;
+import com.gearfirst.receipt.receiptHistory.dto.RepairRequestWrapper;
 import com.gearfirst.receipt.receiptHistory.entity.ReceiptHistoryEntity;
 import com.gearfirst.receipt.receiptHistory.service.ReceiptHistoryService;
 import io.swagger.v3.oas.annotations.Operation;
@@ -30,9 +32,19 @@ public class ReceiptHistoryController {
 
     @Operation(summary = "미처리 접수 수리 시작", description = "미처리 접수 수리를 시작합니다.")
     @PostMapping("/startRepair")
-    public ResponseEntity<ApiResponse<ReceiptHistoryResponse>> startRepair(@RequestBody String receiptHistoryId) {
-        ReceiptHistoryResponse receipts = receiptHistoryService.startRepair(receiptHistoryId);
+    public ResponseEntity<ApiResponse<Void>> startRepair(@RequestBody String receiptHistoryId) {
+        receiptHistoryService.startRepair(receiptHistoryId);
+
         return ApiResponse
-                .success(SuccessStatus.ENGINEER_ASSIGNMENT_SUCCESS, receipts);
+                .success_only(SuccessStatus.ENGINEER_ASSIGNMENT_SUCCESS);
+    }
+
+    @Operation(summary = "수리 내역 등록", description = "수리가 끝난 후 수리 내용과 부품 등 정보를 등록")
+    @PostMapping("/repairDetail")
+    public ResponseEntity<ApiResponse<Void>> repairDetail(@RequestBody RepairRequestWrapper request) {
+        receiptHistoryService.addRepairHistories(request.getReceiptHistoryId(), request.getRepairDetailRequests());
+
+        return ApiResponse
+                .success_only(SuccessStatus.REGIST_REPAIR_DETAIL_SUCCESS);
     }
 }

@@ -1,14 +1,14 @@
 package com.gearfirst.receipt.receiptHistory.service;
 
-import com.gearfirst.receipt.receiptHistory.dto.ReceiptHistoryRequest;
-import com.gearfirst.receipt.receiptHistory.dto.ReceiptHistoryResponse;
-import com.gearfirst.receipt.receiptHistory.dto.RepairHistoryResponse;
-import com.gearfirst.receipt.receiptHistory.dto.UsedPartResponse;
+import com.gearfirst.receipt.receiptHistory.dto.*;
 import com.gearfirst.receipt.receiptHistory.entity.ReceiptHistoryEntity;
 import com.gearfirst.receipt.receiptHistory.entity.ReceiptSequence;
 import com.gearfirst.receipt.receiptHistory.enums.ReceiptHistoryStatus;
 import com.gearfirst.receipt.receiptHistory.repository.ReceiptHistoryRepository;
 import com.gearfirst.receipt.receiptHistory.repository.ReceiptSequenceRepository;
+import com.gearfirst.receipt.repairHistory.entity.RepairHistoryEntity;
+import com.gearfirst.receipt.usedPart.entity.UsedPartEntity;
+import jakarta.persistence.EntityNotFoundException;
 import jakarta.persistence.OptimisticLockException;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
@@ -16,6 +16,7 @@ import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -26,7 +27,48 @@ public class ReceiptHistoryService {
     private final ReceiptSequenceRepository sequenceRepository;
 
     @Transactional
-    public ReceiptHistoryResponse startRepair(String receiptHistoryId) {
+    public void addRepairHistories(String receiptHistoryId, List<RepairDetailRequest> repairDetailRequests) {
+        ReceiptHistoryEntity receipt = receiptHistoryRepository.findById(receiptHistoryId)
+                .orElseThrow(() -> new EntityNotFoundException("접수 내역을 찾을 수 없습니다: " + receiptHistoryId));
+
+
+        List<RepairHistoryEntity> newHistories = repairDetailRequests.stream()
+                .map(historyDto -> {
+                    RepairHistoryEntity newHistory = new RepairHistoryEntity();
+                    newHistory.setRepairDetail(historyDto.getRepairDetail());
+                    newHistory.setRepairCause(historyDto.getRepairCause());
+                    newHistory.setReceiptHistoryEntity(receipt);
+
+                    List<UsedPartEntity> usedParts = historyDto.getUsedParts().stream()
+                            .map(partDto -> {
+                                if (partDto.getQuantity() < 0 || partDto.getPrice() < 0) {
+                                    throw new IllegalArgumentException("부품 수량 또는 가격이 음수일 수 없습니다.");
+                                }
+
+                                UsedPartEntity usedPart = new UsedPartEntity();
+                                usedPart.setPartId(partDto.getPartId());
+                                usedPart.setPartName(partDto.getPartName());
+                                usedPart.setQuantity(partDto.getQuantity());
+                                usedPart.setPrice(partDto.getPrice());
+                                usedPart.setRepairHistoryEntity(newHistory);
+                                return usedPart;
+                            })
+                            .collect(Collectors.toCollection(ArrayList::new));
+
+                    newHistory.setUsedParts(usedParts);
+                    return newHistory;
+                })
+                .collect(Collectors.toCollection(ArrayList::new));
+
+        receipt.getRepairHistories().clear();
+        receipt.getRepairHistories().addAll(newHistories);
+        receipt.setStatus(ReceiptHistoryStatus.FINISH);
+        // 최상위 부모만 저장
+        receiptHistoryRepository.save(receipt);
+    }
+
+    @Transactional
+    public void startRepair(String receiptHistoryId) {
         String engineerName = "티파니 송";
 
         ReceiptHistoryEntity entity = receiptHistoryRepository.findByReceiptHistoryId(receiptHistoryId);
@@ -42,8 +84,6 @@ public class ReceiptHistoryService {
         entity.setEngineer(engineerName);
         entity.setStatus(ReceiptHistoryStatus.REPAIRING);
         receiptHistoryRepository.save(entity);
-
-        return toDto(entity);
     }
 
     public List<ReceiptHistoryResponse> getUnProcessedReceipts() {

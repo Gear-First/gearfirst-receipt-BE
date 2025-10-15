@@ -3,13 +3,15 @@ package com.gearfirst.receipt.usedPart.entity;
 import com.gearfirst.receipt.common.entity.BaseTimeEntity;
 import com.gearfirst.receipt.repairHistory.entity.RepairHistoryEntity;
 import jakarta.persistence.*;
-import lombok.Data;
-import lombok.EqualsAndHashCode;
+import lombok.*;
 
 @Entity
 @Table(name = "used_part")
 @Data
 @EqualsAndHashCode(callSuper = false)
+@Builder
+@NoArgsConstructor
+@AllArgsConstructor
 public class UsedPartEntity extends BaseTimeEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

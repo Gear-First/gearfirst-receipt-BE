@@ -4,8 +4,7 @@ import com.gearfirst.receipt.common.entity.BaseTimeEntity;
 import com.gearfirst.receipt.receiptHistory.entity.ReceiptHistoryEntity;
 import com.gearfirst.receipt.usedPart.entity.UsedPartEntity;
 import jakarta.persistence.*;
-import lombok.Data;
-import lombok.EqualsAndHashCode;
+import lombok.*;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -14,6 +13,9 @@ import java.util.List;
 @Table(name = "repair_history")
 @Data
 @EqualsAndHashCode(callSuper = false)
+@Builder
+@NoArgsConstructor
+@AllArgsConstructor
 public class RepairHistoryEntity extends BaseTimeEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
