@@ -9,9 +9,7 @@ import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
@@ -28,5 +26,13 @@ public class ReceiptHistoryController {
         List<ReceiptHistoryResponse> receipts = receiptHistoryService.getUnProcessedReceipts();
         return ApiResponse
                 .success(SuccessStatus.GET_UNPROCESSED_RECEIPT_SUCCESS, receipts);
+    }
+
+    @Operation(summary = "미처리 접수 수리 시작", description = "미처리 접수 수리를 시작합니다.")
+    @PostMapping("/startRepair")
+    public ResponseEntity<ApiResponse<ReceiptHistoryResponse>> startRepair(@RequestBody String receiptHistoryId) {
+        ReceiptHistoryResponse receipts = receiptHistoryService.startRepair(receiptHistoryId);
+        return ApiResponse
+                .success(SuccessStatus.ENGINEER_ASSIGNMENT_SUCCESS, receipts);
     }
 }

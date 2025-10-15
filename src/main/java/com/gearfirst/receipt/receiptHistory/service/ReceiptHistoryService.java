@@ -25,6 +25,27 @@ public class ReceiptHistoryService {
     private final ReceiptHistoryRepository receiptHistoryRepository;
     private final ReceiptSequenceRepository sequenceRepository;
 
+    @Transactional
+    public ReceiptHistoryResponse startRepair(String receiptHistoryId) {
+        String engineerName = "티파니 송";
+
+        ReceiptHistoryEntity entity = receiptHistoryRepository.findByReceiptHistoryId(receiptHistoryId);
+        if (entity == null) {
+            throw new IllegalArgumentException("해당 접수번호(" + receiptHistoryId + ")를 찾을 수 없습니다.");
+        }
+
+        // 2️⃣ 이미 수리 중/완료된 상태면 배정 불가
+        if (entity.getStatus() != ReceiptHistoryStatus.RECEIPT) {
+            throw new IllegalStateException("이미 수리가 시작된 접수입니다. 현재 상태: " + entity.getStatus());
+        }
+
+        entity.setEngineer(engineerName);
+        entity.setStatus(ReceiptHistoryStatus.REPAIRING);
+        receiptHistoryRepository.save(entity);
+
+        return toDto(entity);
+    }
+
     public List<ReceiptHistoryResponse> getUnProcessedReceipts() {
         List<ReceiptHistoryEntity> entities = receiptHistoryRepository.findByStatus(ReceiptHistoryStatus.RECEIPT);
 
@@ -40,7 +61,7 @@ public class ReceiptHistoryService {
         dto.setReceipterPhone(entity.getReceipterPhone());
         dto.setReceipterRequest(entity.getReceipterRequest());
         dto.setEngineer(entity.getEngineer());
-        dto.setStatus(entity.getStatus().name());
+        dto.setStatus(entity.getStatus().getStatus());
 
         // repairHistories 변환
         List<RepairHistoryResponse> repairDtos = entity.getRepairHistories().stream()

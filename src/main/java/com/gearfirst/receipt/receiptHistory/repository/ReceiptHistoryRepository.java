@@ -8,4 +8,5 @@ import java.util.List;
 
 public interface ReceiptHistoryRepository extends JpaRepository<ReceiptHistoryEntity, String> {
     List<ReceiptHistoryEntity> findByStatus(ReceiptHistoryStatus status);
+    ReceiptHistoryEntity findByReceiptHistoryId(String receiptHistoryId);
 }
