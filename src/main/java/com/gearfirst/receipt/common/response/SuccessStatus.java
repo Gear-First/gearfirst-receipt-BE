@@ -13,6 +13,7 @@ public enum SuccessStatus {
     ENGINEER_ASSIGNMENT_SUCCESS(HttpStatus.OK,"엔지니어 배정 성공"),
     REGIST_REPAIR_DETAIL_SUCCESS(HttpStatus.OK,"수리 내역 등록 성공"),
     GET_RECEIPT_DETAIL_SUCCESS(HttpStatus.OK, "접수 내역 조회 성공"),
+    GET_MY_RECEIPT_SUCCESS(HttpStatus.OK, "나의 수리 내역 조회 성공"),
 
     /** 201 CREATED */
     CREATE_SAMPLE_SUCCESS(HttpStatus.CREATED, "샘플 등록 성공"),

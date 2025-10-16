@@ -13,8 +13,9 @@ import jakarta.persistence.OptimisticLockException;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
-
 import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.LocalTime;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
@@ -25,6 +26,20 @@ import java.util.stream.Collectors;
 public class ReceiptHistoryService {
     private final ReceiptHistoryRepository receiptHistoryRepository;
     private final ReceiptSequenceRepository sequenceRepository;
+
+    public List<ReceiptHistoryResponse> getMyReceipt(String startD, String endD, String keyword){
+        String name = "티파니 송";
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyyMMdd");
+        LocalDate startDate = LocalDate.parse(startD, formatter);
+        LocalDate endDate = LocalDate.parse(endD, formatter);
+
+        LocalDateTime startDateTime = startDate.atStartOfDay();
+        LocalDateTime endDateTime = endDate.atTime(LocalTime.MAX);
+
+        List<ReceiptHistoryEntity> myReceipts = receiptHistoryRepository.findByDateAndEngineerAndKeyword(startDateTime, endDateTime, name, keyword);
+
+        return myReceipts.stream().map(this::toDto).collect(Collectors.toList());
+    }
 
     public ReceiptHistoryResponse getReceiptDetail(String receiptHistoryId) {
         ReceiptHistoryEntity receipt = receiptHistoryRepository.findById(receiptHistoryId)

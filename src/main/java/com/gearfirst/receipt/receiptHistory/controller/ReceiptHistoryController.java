@@ -3,9 +3,7 @@ package com.gearfirst.receipt.receiptHistory.controller;
 import com.gearfirst.receipt.common.response.ApiResponse;
 import com.gearfirst.receipt.common.response.SuccessStatus;
 import com.gearfirst.receipt.receiptHistory.dto.ReceiptHistoryResponse;
-import com.gearfirst.receipt.receiptHistory.dto.RepairDetailRequest;
 import com.gearfirst.receipt.receiptHistory.dto.RepairRequestWrapper;
-import com.gearfirst.receipt.receiptHistory.entity.ReceiptHistoryEntity;
 import com.gearfirst.receipt.receiptHistory.service.ReceiptHistoryService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -49,11 +47,24 @@ public class ReceiptHistoryController {
     }
 
     @Operation(summary = "접수 내역 조회", description = "해당 접수에 대한 정보를 조회한다.")
-    @PostMapping("/getReceiptDetail")
+    @GetMapping("/getReceiptDetail")
     public ResponseEntity<ApiResponse<ReceiptHistoryResponse>> getReceiptDetail(@RequestBody String receiptHistoryId) {
         ReceiptHistoryResponse response = receiptHistoryService.getReceiptDetail(receiptHistoryId);
 
         return ApiResponse
                 .success(SuccessStatus.GET_RECEIPT_DETAIL_SUCCESS, response);
+    }
+
+    @Operation(summary = "나의 수리 내역 조회", description = "내가 담당한 수리 내역을 조회한다.")
+    @GetMapping("/getMyReceipt")
+    public ResponseEntity<ApiResponse<List<ReceiptHistoryResponse>>> getMyReceipt(@RequestParam String startDate,
+                                                                                  @RequestParam String endDate,
+                                                                                  @RequestParam(required = false) String keyword) {
+        String word = "";
+        if(keyword != null) word = keyword;
+        List<ReceiptHistoryResponse> response = receiptHistoryService.getMyReceipt(startDate, endDate, word);
+
+        return ApiResponse
+                .success(SuccessStatus.GET_MY_RECEIPT_SUCCESS, response);
     }
 }
