@@ -47,4 +47,13 @@ public class ReceiptHistoryController {
         return ApiResponse
                 .success_only(SuccessStatus.REGIST_REPAIR_DETAIL_SUCCESS);
     }
+
+    @Operation(summary = "접수 내역 조회", description = "해당 접수에 대한 정보를 조회한다.")
+    @PostMapping("/getReceiptDetail")
+    public ResponseEntity<ApiResponse<ReceiptHistoryResponse>> getReceiptDetail(@RequestBody String receiptHistoryId) {
+        ReceiptHistoryResponse response = receiptHistoryService.getReceiptDetail(receiptHistoryId);
+
+        return ApiResponse
+                .success(SuccessStatus.GET_RECEIPT_DETAIL_SUCCESS, response);
+    }
 }

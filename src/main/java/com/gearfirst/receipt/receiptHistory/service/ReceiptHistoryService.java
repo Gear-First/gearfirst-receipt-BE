@@ -26,11 +26,18 @@ public class ReceiptHistoryService {
     private final ReceiptHistoryRepository receiptHistoryRepository;
     private final ReceiptSequenceRepository sequenceRepository;
 
+    public ReceiptHistoryResponse getReceiptDetail(String receiptHistoryId) {
+        ReceiptHistoryEntity receipt = receiptHistoryRepository.findById(receiptHistoryId)
+                .orElseThrow(() -> new EntityNotFoundException("접수 내역을 찾을 수 없습니다: " + receiptHistoryId));
+
+        return toDto(receipt);
+    }
+
     @Transactional
     public void addRepairHistories(String receiptHistoryId, List<RepairDetailRequest> repairDetailRequests) {
         ReceiptHistoryEntity receipt = receiptHistoryRepository.findById(receiptHistoryId)
                 .orElseThrow(() -> new EntityNotFoundException("접수 내역을 찾을 수 없습니다: " + receiptHistoryId));
-
+        if(receipt.getStatus() != ReceiptHistoryStatus.REPAIRING) throw new IllegalStateException("수리 내역 등록 가능 상태가 아닙니다.");
 
         List<RepairHistoryEntity> newHistories = repairDetailRequests.stream()
                 .map(historyDto -> {
