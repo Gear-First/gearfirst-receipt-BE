@@ -48,7 +48,7 @@ public class ReceiptHistoryController {
 
     @Operation(summary = "접수 내역 조회", description = "해당 접수에 대한 정보를 조회한다.")
     @GetMapping("/getReceiptDetail")
-    public ResponseEntity<ApiResponse<ReceiptHistoryResponse>> getReceiptDetail(@RequestBody String receiptHistoryId) {
+    public ResponseEntity<ApiResponse<ReceiptHistoryResponse>> getReceiptDetail(@RequestParam String receiptHistoryId) {
         ReceiptHistoryResponse response = receiptHistoryService.getReceiptDetail(receiptHistoryId);
 
         return ApiResponse
