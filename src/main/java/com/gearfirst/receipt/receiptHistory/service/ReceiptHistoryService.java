@@ -12,6 +12,7 @@ import jakarta.persistence.EntityNotFoundException;
 import jakarta.persistence.OptimisticLockException;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
+import org.springframework.kafka.annotation.KafkaListener;
 import org.springframework.stereotype.Service;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -195,5 +196,14 @@ public class ReceiptHistoryService {
 
         String formattedSeq = String.format("%03d", sequence.getSequence());
         return String.format("%s-%s-%s", branchCode, datePart, formattedSeq);
+    }
+
+    @KafkaListener(
+            topics = "test-created",
+            groupId = "receipt-group",
+            containerFactory = "testKafkaListenerContainerFactory" // <-- 공장 지정!
+    )
+    public void handleTestCreated(TestDto test) {
+        System.out.println("TestDto 수신: " + test.getMsg());
     }
 }
