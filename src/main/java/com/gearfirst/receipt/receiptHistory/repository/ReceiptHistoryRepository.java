@@ -31,4 +31,6 @@ public interface ReceiptHistoryRepository extends JpaRepository<ReceiptHistoryEn
             @Param("engineer") String engineer,
             @Param("keyword") String keyword
     );
+
+    List<ReceiptHistoryEntity> findByEngineer(String engineer);
 }

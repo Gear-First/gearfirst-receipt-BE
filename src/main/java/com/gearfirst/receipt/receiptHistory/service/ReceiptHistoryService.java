@@ -49,6 +49,17 @@ public class ReceiptHistoryService {
         return toDto(receipt);
     }
 
+    public List<ReceiptInfoResponse> getReceiptInfo(String engineer) {
+        List<ReceiptHistoryEntity> receipt = receiptHistoryRepository.findByEngineer(engineer);
+
+        return receipt.stream().map(r ->
+                ReceiptInfoResponse.builder()
+                        .carNum(r.getReceipterCarNum())
+                        .carType(r.getReceipterCarType())
+                        .build()
+        ).toList();
+    }
+
     @Transactional
     public void addRepairHistories(String receiptHistoryId, List<RepairDetailRequest> repairDetailRequests) {
         ReceiptHistoryEntity receipt = receiptHistoryRepository.findById(receiptHistoryId)

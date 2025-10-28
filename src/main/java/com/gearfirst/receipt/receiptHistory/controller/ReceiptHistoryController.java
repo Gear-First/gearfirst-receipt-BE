@@ -3,6 +3,7 @@ package com.gearfirst.receipt.receiptHistory.controller;
 import com.gearfirst.receipt.common.response.ApiResponse;
 import com.gearfirst.receipt.common.response.SuccessStatus;
 import com.gearfirst.receipt.receiptHistory.dto.ReceiptHistoryResponse;
+import com.gearfirst.receipt.receiptHistory.dto.ReceiptInfoResponse;
 import com.gearfirst.receipt.receiptHistory.dto.RepairRequestWrapper;
 import com.gearfirst.receipt.receiptHistory.service.ReceiptHistoryService;
 import io.swagger.v3.oas.annotations.Operation;
@@ -53,6 +54,16 @@ public class ReceiptHistoryController {
 
         return ApiResponse
                 .success(SuccessStatus.GET_RECEIPT_DETAIL_SUCCESS, response);
+    }
+
+    @Operation(summary = "발주할때 내 접수 내역 조회", description = "발주 시 내가 담당하고 있는 접수에 대한 정보를 조회한다.")
+    @GetMapping("/getReceiptInfo")
+    public ResponseEntity<ApiResponse<List<ReceiptInfoResponse>>> getReceiptInfo() {
+        String s = "티파니 송";
+        List<ReceiptInfoResponse> response = receiptHistoryService.getReceiptInfo(s);
+
+        return ApiResponse
+                .success(SuccessStatus.GET_MY_RECEIPT_ORDERING_SUCCESS, response);
     }
 
     @Operation(summary = "나의 수리 내역 조회", description = "내가 담당한 수리 내역을 조회한다.")
