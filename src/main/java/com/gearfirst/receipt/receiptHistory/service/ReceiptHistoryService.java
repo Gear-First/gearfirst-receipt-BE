@@ -210,8 +210,8 @@ public class ReceiptHistoryService {
     }
 
     @KafkaListener(
-            topics = "test-created",
-            groupId = "receipt-group",
+            topics = "create-part",
+            groupId = "test-group",
             containerFactory = "testKafkaListenerContainerFactory" // <-- 공장 지정!
     )
     public void handleTestCreated(TestDto test) {
