@@ -2,6 +2,7 @@ package com.gearfirst.receipt.receiptHistory.controller;
 
 import com.gearfirst.receipt.common.response.ApiResponse;
 import com.gearfirst.receipt.common.response.SuccessStatus;
+import com.gearfirst.receipt.receiptHistory.dto.NotificationDto;
 import com.gearfirst.receipt.receiptHistory.dto.ReceiptHistoryResponse;
 import com.gearfirst.receipt.receiptHistory.dto.ReceiptInfoResponse;
 import com.gearfirst.receipt.receiptHistory.dto.RepairRequestWrapper;
@@ -77,5 +78,18 @@ public class ReceiptHistoryController {
 
         return ApiResponse
                 .success(SuccessStatus.GET_MY_RECEIPT_SUCCESS, response);
+    }
+
+    @GetMapping("/test")
+    public ResponseEntity<ApiResponse<Void>> handleTestCreated(@RequestParam String eventId) {
+        receiptHistoryService.handleTestCreated(NotificationDto.builder()
+                .id(2L)
+                .eventId(eventId)
+                .type("order")
+                .message("입고 완료")
+                .receiver("HQ")
+                .build());
+
+        return ApiResponse.success_only(SuccessStatus.GET_MY_RECEIPT_ORDERING_SUCCESS);
     }
 }

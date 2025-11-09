@@ -13,6 +13,7 @@ import jakarta.persistence.OptimisticLockException;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.kafka.annotation.KafkaListener;
+import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.stereotype.Service;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -209,12 +210,10 @@ public class ReceiptHistoryService {
         return String.format("%s-%s-%s", branchCode, datePart, formattedSeq);
     }
 
-    @KafkaListener(
-            topics = "create-part",
-            groupId = "test-group",
-            containerFactory = "testKafkaListenerContainerFactory" // <-- 공장 지정!
-    )
-    public void handleTestCreated(TestDto test) {
-        System.out.println("TestDto 수신: " + test.getMsg());
+    private final KafkaTemplate<String, Object> kafkaTemplate;
+    public void handleTestCreated(NotificationDto n) {
+        String topic = "notification";
+
+        kafkaTemplate.send(topic, n);
     }
 }
