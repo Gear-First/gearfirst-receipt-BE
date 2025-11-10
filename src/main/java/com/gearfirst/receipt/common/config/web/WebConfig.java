@@ -1,6 +1,7 @@
 package com.gearfirst.receipt.common.config.web;
 
-import com.gearfirst.backend.common.resolver.CurrentUserArgumentResolver;
+
+import com.gearfirst.receipt.common.resolver.CurrentUserArgumentResolver;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.web.method.support.HandlerMethodArgumentResolver;

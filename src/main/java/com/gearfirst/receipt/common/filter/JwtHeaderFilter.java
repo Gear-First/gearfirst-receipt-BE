@@ -1,9 +1,9 @@
 package com.gearfirst.receipt.common.filter;
 
-import com.gearfirst.backend.common.context.UserContext;
-import com.gearfirst.backend.common.context.UserContextHolder;
-import com.gearfirst.backend.common.exception.BadRequestException;
-import com.gearfirst.backend.common.response.ErrorStatus;
+import com.gearfirst.receipt.common.context.UserContext;
+import com.gearfirst.receipt.common.context.UserContextHolder;
+import com.gearfirst.receipt.common.exception.BadRequestException;
+import com.gearfirst.receipt.common.response.ErrorStatus;
 import jakarta.servlet.*;
 import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.stereotype.Component;
