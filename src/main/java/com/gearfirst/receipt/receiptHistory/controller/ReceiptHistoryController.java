@@ -1,5 +1,7 @@
 package com.gearfirst.receipt.receiptHistory.controller;
 
+import com.gearfirst.receipt.common.annotation.CurrentUser;
+import com.gearfirst.receipt.common.context.UserContext;
 import com.gearfirst.receipt.common.response.ApiResponse;
 import com.gearfirst.receipt.common.response.SuccessStatus;
 import com.gearfirst.receipt.receiptHistory.dto.NotificationDto;
@@ -32,8 +34,10 @@ public class ReceiptHistoryController {
 
     @Operation(summary = "미처리 접수 수리 시작", description = "미처리 접수 수리를 시작합니다.")
     @PostMapping("/startRepair")
-    public ResponseEntity<ApiResponse<Void>> startRepair(@RequestBody String receiptHistoryId) {
-        receiptHistoryService.startRepair(receiptHistoryId);
+    public ResponseEntity<ApiResponse<Void>> startRepair(
+            @RequestBody String receiptHistoryId,
+            @CurrentUser UserContext user) {
+        receiptHistoryService.startRepair(receiptHistoryId, user);
 
         return ApiResponse
                 .success_only(SuccessStatus.ENGINEER_ASSIGNMENT_SUCCESS);
@@ -59,9 +63,8 @@ public class ReceiptHistoryController {
 
     @Operation(summary = "발주할때 내 접수 내역 조회", description = "발주 시 내가 담당하고 있는 접수에 대한 정보를 조회한다.")
     @GetMapping("/getReceiptInfo")
-    public ResponseEntity<ApiResponse<List<ReceiptInfoResponse>>> getReceiptInfo() {
-        String s = "티파니 송";
-        List<ReceiptInfoResponse> response = receiptHistoryService.getReceiptInfo(s);
+    public ResponseEntity<ApiResponse<List<ReceiptInfoResponse>>> getReceiptInfo(@CurrentUser UserContext user) {
+        List<ReceiptInfoResponse> response = receiptHistoryService.getReceiptInfo(user);
 
         return ApiResponse
                 .success(SuccessStatus.GET_MY_RECEIPT_ORDERING_SUCCESS, response);
@@ -71,10 +74,12 @@ public class ReceiptHistoryController {
     @GetMapping("/getMyReceipt")
     public ResponseEntity<ApiResponse<List<ReceiptHistoryResponse>>> getMyReceipt(@RequestParam String startDate,
                                                                                   @RequestParam String endDate,
-                                                                                  @RequestParam(required = false) String keyword) {
+                                                                                  @RequestParam(required = false) String keyword,
+                                                                                  @CurrentUser UserContext user
+    ) {
         String word = "";
         if(keyword != null) word = keyword;
-        List<ReceiptHistoryResponse> response = receiptHistoryService.getMyReceipt(startDate, endDate, word);
+        List<ReceiptHistoryResponse> response = receiptHistoryService.getMyReceipt(startDate, endDate, word, user);
 
         return ApiResponse
                 .success(SuccessStatus.GET_MY_RECEIPT_SUCCESS, response);

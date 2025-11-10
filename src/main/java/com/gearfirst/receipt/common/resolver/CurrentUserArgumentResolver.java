@@ -1,0 +1,31 @@
+package com.gearfirst.receipt.common.resolver;
+
+import com.gearfirst.receipt.common.annotation.CurrentUser;
+import com.gearfirst.receipt.common.context.UserContext;
+import com.gearfirst.receipt.common.context.UserContextHolder;
+import com.gearfirst.receipt.common.exception.UnAuthorizedException;
+import com.gearfirst.receipt.common.response.ErrorStatus;
+import org.springframework.core.MethodParameter;
+import org.springframework.stereotype.Component;
+import org.springframework.web.bind.support.WebDataBinderFactory;
+import org.springframework.web.context.request.NativeWebRequest;
+import org.springframework.web.method.support.HandlerMethodArgumentResolver;
+import org.springframework.web.method.support.ModelAndViewContainer;
+
+@Component
+public class CurrentUserArgumentResolver implements HandlerMethodArgumentResolver {
+    @Override
+    public boolean supportsParameter(MethodParameter parameter) {
+        return parameter.hasParameterAnnotation(CurrentUser.class)
+                && parameter.getParameterType().equals(UserContext.class);
+    }
+
+    @Override
+    public Object resolveArgument(MethodParameter parameter, ModelAndViewContainer mavContainer, NativeWebRequest webRequest, WebDataBinderFactory binderFactory) throws Exception {
+        UserContext user = UserContextHolder.get();
+        if(user == null) {
+            throw new UnAuthorizedException(ErrorStatus.USER_UNAUTHORIZED.getMessage());
+        }
+        return user;
+    }
+}

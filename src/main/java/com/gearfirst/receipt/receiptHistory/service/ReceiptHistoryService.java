@@ -1,5 +1,7 @@
 package com.gearfirst.receipt.receiptHistory.service;
 
+import com.gearfirst.receipt.common.annotation.CurrentUser;
+import com.gearfirst.receipt.common.context.UserContext;
 import com.gearfirst.receipt.receiptHistory.dto.*;
 import com.gearfirst.receipt.receiptHistory.entity.ReceiptHistoryEntity;
 import com.gearfirst.receipt.receiptHistory.entity.ReceiptSequence;
@@ -29,8 +31,8 @@ public class ReceiptHistoryService {
     private final ReceiptHistoryRepository receiptHistoryRepository;
     private final ReceiptSequenceRepository sequenceRepository;
 
-    public List<ReceiptHistoryResponse> getMyReceipt(String startD, String endD, String keyword){
-        String name = "티파니 송";
+    public List<ReceiptHistoryResponse> getMyReceipt(String startD, String endD, String keyword, UserContext user){
+        String name = user.getUsername();
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyyMMdd");
         LocalDate startDate = LocalDate.parse(startD, formatter);
         LocalDate endDate = LocalDate.parse(endD, formatter);
@@ -50,8 +52,8 @@ public class ReceiptHistoryService {
         return toDto(receipt);
     }
 
-    public List<ReceiptInfoResponse> getReceiptInfo(String engineer) {
-        List<ReceiptHistoryEntity> receipt = receiptHistoryRepository.findByEngineer(engineer);
+    public List<ReceiptInfoResponse> getReceiptInfo(UserContext user) {
+        List<ReceiptHistoryEntity> receipt = receiptHistoryRepository.findByEngineer(user.getUsername());
 
         return receipt.stream().map(r ->
                 ReceiptInfoResponse.builder()
@@ -103,8 +105,8 @@ public class ReceiptHistoryService {
     }
 
     @Transactional
-    public void startRepair(String receiptHistoryId) {
-        String engineerName = "티파니 송";
+    public void startRepair(String receiptHistoryId, UserContext user) {
+        String engineerName = user.getUsername();
 
         ReceiptHistoryEntity entity = receiptHistoryRepository.findByReceiptHistoryId(receiptHistoryId);
         if (entity == null) {
